@@ -18,6 +18,10 @@ This plugin allows you to upload entire directories with subdirectories to your 
 * Backup your entire site files by pointing to the WordPress installation directory.   
 * Specify a Dropbox folder to which your files should be uploaded. If such folder doesn't exist it will be created.   
 
+**My other plugins:**   
+
+* Intuitive Navigation (http://wordpress.org/extend/plugins/intuitive-navigation/)   
+* Generate Cache (http://wordpress.org/extend/plugins/generate-cache/)   
 
 Links: [Author's Site](http://www.denisbuka.ru)
 

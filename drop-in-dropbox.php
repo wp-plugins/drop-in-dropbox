@@ -51,7 +51,7 @@ function drop_drop_init(){
 }
 
 function drop_drop_add_options_page() {
-	add_options_page('Drop-in-Dropbox Options', 'Drop-in-Dropbox', 'manage_options', __FILE__, 'drop_drop_render_form');
+	add_options_page('Drop in Dropbox Options', 'Drop in Dropbox', 'manage_options', __FILE__, 'drop_drop_render_form');
 }
 
 function drop_drop_render_form() {
@@ -59,7 +59,7 @@ function drop_drop_render_form() {
 	<div class="wrap">
 		
 		<div class="icon32" id="icon-options-general"><br></div>
-		<h2>Drop-in-Dropbox Settings</h2>
+		<h2>Drop in Dropbox Settings</h2>
 
 		<form method="post" action="options.php">
 			<?php settings_fields('drop_drop_plugin_options'); ?>
@@ -121,7 +121,7 @@ function drop_drop_render_form() {
 		</form>
 		<form method="post">
 			<p class="submit">
-			<input type="submit" name="drop_drop_now" value="Drop-in-Dropbox now!" />
+			<input type="submit" name="drop_drop_now" value="Drop in Dropbox now!" />
 			&nbsp;&nbsp;<em>(make sure you've saved any recent changes)</em>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="drop_drop_abort" value="Abort" />
 			</p>
@@ -137,6 +137,12 @@ function drop_drop_render_form() {
 		}
 		?>
 
+		<hr />
+		<h3>My other plugins:</h3>
+		<ul>
+			<li><a href="http://wordpress.org/extend/plugins/intuitive-navigation/">Intuitive Navigation</a></li>   
+			<li><a href="http://wordpress.org/extend/plugins/generate-cache/">Generate Cache</a></li>   
+		</ul>
 	</div>
 	<?php	
 }
@@ -153,7 +159,7 @@ add_filter( 'plugin_action_links', 'drop_drop_plugin_action_links', 10, 2 );
 function drop_drop_plugin_action_links( $links, $file ) {
 
 	if ( $file == plugin_basename( __FILE__ ) ) {
-		$drop_drop_links = '<a href="'.get_admin_url().'options-general.php?page=drop-in-Dropbox/drop-in-Dropbox.php">'.__('Settings').'</a>';
+		$drop_drop_links = '<a href="'.get_admin_url().'options-general.php?page=drop-in-dropbox/drop-in-dropbox.php">'.__('Settings').'</a>';
 		array_unshift( $links, $drop_drop_links );
 	}
 
