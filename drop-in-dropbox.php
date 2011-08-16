@@ -136,7 +136,7 @@ function drop_drop_render_form() {
 			echo '<p style="color:red"><strong>Uploading to Dropbox aborted.</strong></p>';
 		}
 		?>
-
+		<br />
 		<hr />
 		<h3>My other plugins:</h3>
 		<ul>
