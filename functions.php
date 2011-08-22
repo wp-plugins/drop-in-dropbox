@@ -1,6 +1,6 @@
 <?php
 function initDrop() {
-	if( !is_dir( dirname(__FILE__) . '/tmp' ) ) mkdir( dirname(__FILE__) . '/tmp' );
+	//if( !is_dir( dirname(__FILE__) . '/tmp' ) ) mkdir( dirname(__FILE__) . '/tmp' );
 	$runflag = dirname(__FILE__) . '/tmp/drop_running';
 	touch( $runflag );
 	$options = get_option('drop_drop_options');
@@ -11,6 +11,8 @@ function initDrop() {
 	} elseif ( ListFiles($loc_dir) != FALSE ) {
 		$files = ListFiles( $loc_dir );
 	}
+	$files = serialize( $files );
+	$files = htmlentities($files,ENT_QUOTES);
 	if( $files ) {
 		if( !get_option( 'drop_drop_all_files' ) ) {
 			add_option( 'drop_drop_all_files', $files );
@@ -53,6 +55,8 @@ function dropNow( $count, $run ) {
 	
 	if( !get_option( 'drop_drop_all_files' ) ) exit;
 	$files = get_option( 'drop_drop_all_files' );
+	$files = html_entity_decode($files,ENT_QUOTES);
+	$files = unserialize($files);
 	$files_num = count($files);
 	if( $count < $files_num ) {
 		$time_start = time();
@@ -63,9 +67,7 @@ function dropNow( $count, $run ) {
 				$asynchronous_call = curlPostAsyncDD( $url, $params );
 				break; 
 			}
-			if( ( strpos( $files[$i], 'plugins/drop-in-dropbox/tmp' ) != FALSE ) && ( strpos( $files[$i], 'drop-in-dropbox/tmp/delete-me-not-118346814134' ) ) == FALSE ) {
-				continue;
-			}
+			if( ( strpos( $files[$i], 'plugins/drop-in-dropbox/tmp' ) != FALSE ) && ( strpos( $files[$i], 'drop-in-dropbox/tmp/delete-me-not-118346814134' ) ) == FALSE ) continue;
 			$runflag = dirname(__FILE__) . '/tmp/drop_running';
 			if( !file_exists( $runflag )  ) { 
 				break; 
@@ -91,13 +93,12 @@ function dropNow( $count, $run ) {
 					$temp_file = dirname( $temp_file ) . '/' . $file_name . '.' . $info['extension'];
 					$temp_name_ext = $file_name . '.' . $info['extension'];
 				}
-
 				try { full_copy( $files[$i], $temp_file ); } catch(Exception $e) { echo 'COPY FAILED'; }
 
 				$up_dir = $rem_dir . fixEnc( $i_dir );
 				file_put_contents( $runflag, ($i+1) . ' out of ' . $files_num . ': ' . fixEnc( $i_dir ) . $temp_name_ext ); // write currently uploaded filename to flagfile
 				try { $uploader -> upload( $temp_file, $up_dir ); } catch(Exception $e) { echo 'UPLOAD FAILED'; }
-				if( strpos( $file, 'delete-me-not-118346814134' ) != FALSE ) unlink( $temp_file );
+				if( strpos( $temp_file, 'delete-me-not-118346814134' ) == FALSE ) unlink( $temp_file );
 				$c = $i;
 			}
 		}
