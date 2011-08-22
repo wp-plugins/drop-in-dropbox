@@ -19,7 +19,7 @@ function initDrop() {
 		}
 		$url = WP_PLUGIN_URL . '/drop-in-dropbox/run1.php';
 		$params = array( 'count' => 0 );
-		$asynchronous_call = curl_post_async( $url, $params );
+		$asynchronous_call = curlPostAsyncDD( $url, $params );
 	}
 }
 
@@ -60,7 +60,7 @@ function dropNow( $count, $run ) {
 			if( ( time()-60 ) > $time_start ) { 
 				$url = WP_PLUGIN_URL . '/drop-in-dropbox/' . $run . '.php';
 				$params = array( 'count' => $i );
-				$asynchronous_call = curl_post_async( $url, $params );
+				$asynchronous_call = curlPostAsyncDD( $url, $params );
 				break; 
 			}
 			if( ( strpos( $files[$i], 'plugins/drop-in-dropbox/tmp' ) != FALSE ) && ( strpos( $files[$i], 'drop-in-dropbox/tmp/delete-me-not-118346814134' ) ) == FALSE ) {
@@ -154,7 +154,7 @@ function ListFiles($dir) {
 	}
 }
 
-function curl_post_async($url, $params = null) { 
+function curlPostAsyncDD($url, $params = null) { 
 	if($params) { 
 		foreach ($params as $key => &$val) { 
 			if (is_array($val)) $val = implode(',', $val); 

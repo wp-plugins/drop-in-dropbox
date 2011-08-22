@@ -3,7 +3,7 @@
 Plugin Name: Drop in Dropbox
 Plugin URI: http://www.denisbuka.ru/drop-in-dropbox/
 Description: Upload single files or entire directories with subdirectories to your Dropbox account.
-Version: 0.2
+Version: 0.2.1
 Author: Denis Buka
 Author URI: http://www.denisbuka.ru
 
