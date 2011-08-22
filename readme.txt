@@ -1,16 +1,16 @@
 === Drop in Dropbox ===
 Contributors: Denis Buka
 Donate link: http://www.denisbuka.ru
-Tags: dropbox, upload, backup, directories, subdirectories, files
+Tags: dropbox, upload, backup, files, directories, subdirectories, files
 Requires at least: 3.2
 Tested up to: 3.2
-Stable tag: 0.1 beta
+Stable tag: 0.2
 
-Upload entire directories with subdirectories to your Dropbox account.   
+Upload single files or entire directories with subdirectories to your Dropbox account.   
 
 == Description ==
 
-This plugin allows you to upload entire directories with subdirectories to your Dropbox account. You can use it for backup, synchronization or whatever uploading tasks you might have.
+This plugin allows you to upload single files or entire directories with subdirectories to your Dropbox account. You can use it for backup, synchronization or whatever uploading tasks you might have.
 
 **Features overview:**   
 
@@ -33,6 +33,11 @@ Links: [Author's Site](http://www.denisbuka.ru)
 
 == Frequently Asked Questions ==
 
+= Any new features planned? =
+Actually, yes:   
+1) schedule uploads to be run periodically at a specific time;   
+2) ability to exclude certain files and directories from uploading.
+
 == Upgrade Notice ==
 
 == Screenshots ==
@@ -42,4 +47,9 @@ Links: [Author's Site](http://www.denisbuka.ru)
 == Changelog ==
 
 = 0.1 beta =
-* Initial beta release
+* Initial beta release   
+
+= 0.2 =
+* Ability to upload files   
+* Improvements for long uploads   
+* Added "Abort" button   

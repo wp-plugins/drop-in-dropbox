@@ -2,8 +2,8 @@
 /*
 Plugin Name: Drop in Dropbox
 Plugin URI: http://www.denisbuka.ru/drop-in-dropbox/
-Description: Upload entire directories with subdirectories to your Dropbox account.
-Version: 0.1 beta
+Description: Upload single files or entire directories with subdirectories to your Dropbox account.
+Version: 0.2
 Author: Denis Buka
 Author URI: http://www.denisbuka.ru
 
@@ -81,12 +81,13 @@ function drop_drop_render_form() {
 				</tr>
 
 				<tr valign="top">
-					<th scope="row"><strong>Directory to upload:</strong>
+					<th scope="row"><strong>Directory or file to upload:</strong>
 					<br /><em>(could be anything within your WordPress installation)</em>
 					</th>
 					<td>
-						<?php if( !is_dir( charset_x_win( $options['drop_drop_loc_dir'] ) ) ) { ?>
-						<span style="color:red;">Please specify correct directory path:</span><br />
+						<?php if( !is_dir( charset_x_win( $options['drop_drop_loc_dir'] ) ) && !file_exists( $options['drop_drop_loc_dir'] ) ) { 
+								$error = 1; ?>
+							<span style="color:red;">Please specify correct directory path:</span><br />
 						<?php } ?>
 						<label><input style="text-align:left;" type="text" size="88" name="drop_drop_options[drop_drop_loc_dir]" value="<?php echo $options['drop_drop_loc_dir']; ?>" /></label>
 						<br /><em>(full directory path)</em>
@@ -114,28 +115,51 @@ function drop_drop_render_form() {
 			<?php 	
 				$options['drop_drop_final_dir'] = $options['drop_drop_dir'];
 				update_option( 'drop_drop_options', $options ); 
+				
+				$runflag = dirname(__FILE__) . '/tmp/drop_running';
+				if( file_exists( $runflag ) ) {  // delete flagfile if it's too old
+					$filetime = filemtime( $runflag );
+					$timeout = time()-1200; 
+					if ($filetime <= $timeout) {
+						unlink( $runflag );
+					} 
+				}
+
 			?>
 			<p class="submit">
 			<input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
 			</p>
 		</form>
-		<form method="post">
-			<p class="submit">
-			<input type="submit" name="drop_drop_now" value="Drop in Dropbox now!" />
-			&nbsp;&nbsp;<em>(make sure you've saved any recent changes)</em>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="drop_drop_abort" value="Abort" />
-			</p>
-		</form>						
-		<?php
-		if( isset( $_POST['drop_drop_now'] ) ) {
-			echo '<span style="color: green"><strong>Do not close this window untill all files have been uploaded...</strong></span><br /><br />';
-			try { dropNow(); } catch(Exception $e) { echo '<p style="color:red"><strong>Error message: ' . $e->getMessage() . '</strong></p>'; }
-		}
-		if( isset( $_POST['drop_drop_abort'] ) ) {
-			cleanTmp();
-			echo '<p style="color:red"><strong>Uploading to Dropbox aborted.</strong></p>';
-		}
-		?>
+		<?php if( $error != 1 ) { ?>
+			<form method="post" class="submit">
+			<?php 
+			if( ( isset( $_POST['drop_drop_now'] ) || file_exists( $runflag ) ) && !isset( $_POST['drop_drop_abort'] ) ) { 
+				if( file_exists( $runflag ) ) {
+					echo 	'<p>
+								<p style="color: green"><strong>Upload started successfully!</strong></p>
+								<p><strong style="color: green">Currently uploading: </strong></span>
+								<code>' . file_get_contents( $runflag ) . '</code></p>
+							</p>
+							<p><input type="submit" name="drop_drop_abort" value="Abort" />&nbsp;&nbsp;&nbsp;<input type="submit" name="refresh" value="Refresh" /></p>';
+				} else {
+					try { initDrop(); } catch(Exception $e) { echo '<p style="color:red"><strong>Error message: ' . $e->getMessage() . '</strong></p>'; }
+					echo 	'<p style="color: green"><strong>Uploading started successfully!</strong>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="submit" name="drop_drop_abort" value="Abort" />&nbsp;&nbsp;&nbsp;<input type="submit" name="refresh" value="Refresh" /></p></p>';
+				}
+			} else {
+				if( isset( $_POST['drop_drop_abort'] ) ) {
+					cleanTmp();
+					echo '<p style="color:red"><strong>Uploading to Dropbox aborted.</strong></p>';
+				}
+				echo 	'<p>
+							<input type="submit" name="drop_drop_now" value="Drop in Dropbox now!" />
+							&nbsp;&nbsp;<em>(make sure you\'ve saved any recent changes)</em>
+						</p>';
+			}
+			?>
+			</form>			
+		<?php } ?>
 		<br />
 		<hr />
 		<h3>My other plugins:</h3>

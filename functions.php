@@ -1,25 +1,49 @@
 <?php
+function initDrop() {
+	if( !is_dir( dirname(__FILE__) . '/tmp' ) ) mkdir( dirname(__FILE__) . '/tmp' );
+	$runflag = dirname(__FILE__) . '/tmp/drop_running';
+	touch( $runflag );
+	$options = get_option('drop_drop_options');
+	$loc_dir = rtrim( $options['drop_drop_loc_dir'], "/\\" );
+	$loc_dir = charset_x_win( $loc_dir );
+	if ( file_exists( $loc_dir ) && !is_dir( $loc_dir ) ) {
+		$files = array( 0 => $loc_dir );
+	} elseif ( ListFiles($loc_dir) != FALSE ) {
+		$files = ListFiles( $loc_dir );
+	}
+	if( $files ) {
+		if( !get_option( 'drop_drop_all_files' ) ) {
+			add_option( 'drop_drop_all_files', $files );
+		} else {
+			update_option( 'drop_drop_all_files', $files );
+		}
+		$url = WP_PLUGIN_URL . '/drop-in-dropbox/run1.php';
+		$params = array( 'count' => 0 );
+		$asynchronous_call = curl_post_async( $url, $params );
+	}
+}
+
 function fixEnc( $string ) {
 	$string = iconv("CP1251", "UTF-8//TRANSLIT", charset_x_win( $string ) );
 	return $string;
 }
 function cleanTmp() {
 	foreach ( ListFiles( dirname(__FILE__) . '/tmp/' ) as $key=>$file){
+		if( strpos( $file, 'delete-me-not-118346814134' ) ) continue;
 		unlink( $file );
 	}
+	if( get_option( 'drop_drop_all_files' ) ) {
+		delete_option( 'drop_drop_all_files' );
+	}
 }
-function dropNow() {
-
+function dropNow( $count, $run ) {
 	set_time_limit(0);
-	error_reporting(E_ALL);
 	ini_set("max_execution_time", "3000000000");
-	$options = get_option('drop_drop_options');
 	ini_set('memory_limit','128M');
 	ini_set('output_buffering', 0);
 	ini_set('implicit_flush', 1);
-	try { while( @ob_end_flush() ); } catch( Exception $e ) {}
-	ob_start();
 	
+	$options = get_option('drop_drop_options');
 	$uploader = new DropboxUploader($options['drop_drop_email'], $options['drop_drop_pwd']);
 	$uploader->setCaCertificateFile(dirname(__FILE__) . '/certificate.cer');
 	
@@ -27,38 +51,58 @@ function dropNow() {
 	$loc_dir = rtrim( $options['drop_drop_loc_dir'], "/\\" );
 	$loc_dir = charset_x_win( $loc_dir );
 	
-	if ( ListFiles($loc_dir) != FALSE ) {
-		foreach ( ListFiles( $loc_dir ) as $key=>$file){
-			
-			$file = str_replace( '\\', '/', $file );
-			$file_base = str_replace( dirname( $file ) . '/', '', $file );
-			$file_new_base = fixEnc( $file_base );
-			$i_dir = substr( $file, 0, strlen( $file ) - strlen( $file_base ) ); 
-			//$i_dir = str_replace( $file_base, '', $file );
-			$i_dir = substr( $i_dir, strlen( $loc_dir ), strlen( $i_dir ) );
-			$temp_file = dirname(__FILE__) . '/tmp/' . $file_new_base;
-			$temp_name_ext = $file_new_base;
-
-			if( strlen( $file_new_base ) > 200 ) {
-				$info = pathinfo($file_new_base);
-				$file_name = substr( $file_new_base, 0, strlen( $file_new_base ) - strlen( $info['extension'] ) );
-				$file_name = fixEnc( substr( $file_name, 0, 179 ) ) . "[...]";
-				$temp_file = dirname( $temp_file ) . '/' . $file_name . '.' . $info['extension'];
-				$temp_name_ext = $file_name . '.' . $info['extension'];
+	if( !get_option( 'drop_drop_all_files' ) ) exit;
+	$files = get_option( 'drop_drop_all_files' );
+	$files_num = count($files);
+	if( $count < $files_num ) {
+		$time_start = time();
+		for( $i=$count; $i<$files_num; $i++ ) {
+			if( ( time()-60 ) > $time_start ) { 
+				$url = WP_PLUGIN_URL . '/drop-in-dropbox/' . $run . '.php';
+				$params = array( 'count' => $i );
+				$asynchronous_call = curl_post_async( $url, $params );
+				break; 
 			}
+			if( ( strpos( $files[$i], 'plugins/drop-in-dropbox/tmp' ) != FALSE ) && ( strpos( $files[$i], 'drop-in-dropbox/tmp/delete-me-not-118346814134' ) ) == FALSE ) {
+				continue;
+			}
+			$runflag = dirname(__FILE__) . '/tmp/drop_running';
+			if( !file_exists( $runflag )  ) { 
+				break; 
+			} else {
+				$filetime = filemtime( $runflag );
+				$timeout = time()-1200; 
+				if ($filetime <= $timeout) {
+					unlink( $runflag );
+				} 
+				
+				$files[$i] = str_replace( '\\', '/', $files[$i] );
+				$file_base = str_replace( dirname( $files[$i] ) . '/', '', $files[$i] );
+				$file_new_base = fixEnc( $file_base );
+				$i_dir = substr( $files[$i], 0, strlen( $files[$i] ) - strlen( $file_base ) ); 
+				$i_dir = substr( $i_dir, strlen( $loc_dir ), strlen( $i_dir ) );
+				$temp_file = dirname(__FILE__) . '/tmp/' . $file_new_base;
+				$temp_name_ext = $file_new_base;
 
-			full_copy( $file, $temp_file );
-			$up_dir = $rem_dir . fixEnc( $i_dir );
-			echo '<span style="color: green">UPLOADING: </span><code>' . fixEnc( $i_dir ) . $temp_name_ext . '</code> <span style="color: green">...</span>';
-			ob_flush(); flush();
-			$uploader -> upload( $temp_file, $up_dir );
-			unlink( $temp_file );
-			echo '<span style="color: green"> DONE</span><br />';
-			ob_flush(); flush();
-		} 
-		echo '<br /><span style="color: green"><strong>All files have been uploaded successfully!</strong></span><br /><br />';
-		cleanTmp();
+				if( strlen( $file_new_base ) > 200 ) {
+					$info = pathinfo($file_new_base);
+					$file_name = substr( $file_new_base, 0, strlen( $file_new_base ) - strlen( $info['extension'] ) );
+					$file_name = fixEnc( substr( $file_name, 0, 179 ) ) . "[...]";
+					$temp_file = dirname( $temp_file ) . '/' . $file_name . '.' . $info['extension'];
+					$temp_name_ext = $file_name . '.' . $info['extension'];
+				}
+
+				try { full_copy( $files[$i], $temp_file ); } catch(Exception $e) { echo 'COPY FAILED'; }
+
+				$up_dir = $rem_dir . fixEnc( $i_dir );
+				file_put_contents( $runflag, ($i+1) . ' out of ' . $files_num . ': ' . fixEnc( $i_dir ) . $temp_name_ext ); // write currently uploaded filename to flagfile
+				try { $uploader -> upload( $temp_file, $up_dir ); } catch(Exception $e) { echo 'UPLOAD FAILED'; }
+				if( strpos( $file, 'delete-me-not-118346814134' ) != FALSE ) unlink( $temp_file );
+				$c = $i;
+			}
+		}
 	}
+	if( ($c+1) >= $files_num ) { cleanTmp(); } 
 }
 
 function full_copy( $source, $target ) {
@@ -108,6 +152,36 @@ function ListFiles($dir) {
 		echo '<p style="color:red"><strong>Error message: No such directory.</strong></p>';
 		return FALSE;
 	}
+}
+
+function curl_post_async($url, $params = null) { 
+	if($params) { 
+		foreach ($params as $key => &$val) { 
+			if (is_array($val)) $val = implode(',', $val); 
+				$post_params[] = $key.'='.urlencode($val); 
+		} 
+		if($post_params) $post_string = implode('&', $post_params); 
+	}
+
+	$parts=parse_url($url);
+
+	$fp = fsockopen($parts['host'], 
+	isset($parts['port'])?$parts['port']:80, 
+	$errno, $errstr, 30);
+
+	if($fp) { 
+		$out = "POST ".$parts['path']." HTTP/1.1\r\n"; 
+		$out.= "Host: ".$parts['host']."\r\n"; 
+		$out.= "Content-Type: application/x-www-form-urlencoded\r\n"; 
+		$out.= "Content-Length: ".strlen($post_string)."\r\n"; 
+		$out.= "Connection: Close\r\n\r\n"; 
+		if (isset($post_string)) $out.= $post_string;
+		fwrite($fp, $out); 
+		fclose($fp);
+		return true; 
+	} else { 
+		return false; 
+	} 
 }
 
 ?>
