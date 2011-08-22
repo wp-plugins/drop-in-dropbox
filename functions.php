@@ -1,8 +1,5 @@
 <?php
 function initDrop() {
-	//if( !is_dir( dirname(__FILE__) . '/tmp' ) ) mkdir( dirname(__FILE__) . '/tmp' );
-	$runflag = dirname(__FILE__) . '/tmp/drop_running';
-	touch( $runflag );
 	$options = get_option('drop_drop_options');
 	$loc_dir = rtrim( $options['drop_drop_loc_dir'], "/\\" );
 	$loc_dir = charset_x_win( $loc_dir );
@@ -11,6 +8,7 @@ function initDrop() {
 	} elseif ( ListFiles($loc_dir) != FALSE ) {
 		$files = ListFiles( $loc_dir );
 	}
+	$files_count = count( $files );
 	$files = serialize( $files );
 	$files = htmlentities($files,ENT_QUOTES);
 	if( $files ) {
@@ -19,9 +17,18 @@ function initDrop() {
 		} else {
 			update_option( 'drop_drop_all_files', $files );
 		}
-		$url = WP_PLUGIN_URL . '/drop-in-dropbox/run1.php';
-		$params = array( 'count' => 0 );
-		$asynchronous_call = curlPostAsyncDD( $url, $params );
+		
+		$runflag = dirname(__FILE__) . '/tmp/drop_running';
+		touch( $runflag );
+
+		if( dropNow( 0, 'run2', TRUE ) == TRUE ) { 
+			$url = WP_PLUGIN_URL . '/drop-in-dropbox/run1.php';
+			$params = array( 'count' => 1 );
+			$asynchronous_call = curlPostAsyncDD( $url, $params );
+			echo '<p><strong style="color: green">Currently uploading: </strong></span><code>' . file_get_contents( $runflag ) . '</code></p>';
+		} else { 
+			cleanTmp(); 
+		}
 	}
 }
 
@@ -38,7 +45,7 @@ function cleanTmp() {
 		delete_option( 'drop_drop_all_files' );
 	}
 }
-function dropNow( $count, $run ) {
+function dropNow( $count, $run, $test=FALSE ) {
 	set_time_limit(0);
 	ini_set("max_execution_time", "3000000000");
 	ini_set('memory_limit','128M');
@@ -57,10 +64,10 @@ function dropNow( $count, $run ) {
 	$files = get_option( 'drop_drop_all_files' );
 	$files = html_entity_decode($files,ENT_QUOTES);
 	$files = unserialize($files);
-	$files_num = count($files);
-	if( $count < $files_num ) {
+	$files_count = count($files);
+	if( $count < $files_count ) {
 		$time_start = time();
-		for( $i=$count; $i<$files_num; $i++ ) {
+		for( $i=$count; $i<$files_count; $i++ ) {
 			if( ( time()-60 ) > $time_start ) { 
 				$url = WP_PLUGIN_URL . '/drop-in-dropbox/' . $run . '.php';
 				$params = array( 'count' => $i );
@@ -96,14 +103,17 @@ function dropNow( $count, $run ) {
 				try { full_copy( $files[$i], $temp_file ); } catch(Exception $e) { echo 'COPY FAILED'; }
 
 				$up_dir = $rem_dir . fixEnc( $i_dir );
-				file_put_contents( $runflag, ($i+1) . ' out of ' . $files_num . ': ' . fixEnc( $i_dir ) . $temp_name_ext ); // write currently uploaded filename to flagfile
-				try { $uploader -> upload( $temp_file, $up_dir ); } catch(Exception $e) { echo 'UPLOAD FAILED'; }
+				try { $uploader -> upload( $temp_file, $up_dir ); } catch(Exception $e) { $error=$e->getMessage(); echo '<p style="color:red"><strong>UPLOAD FAILED: ' . $e->getMessage() . '</strong></p>'; }
+				file_put_contents( $runflag, ($i+1) . ' out of ' . $files_count . ': ' . fixEnc( $i_dir ) . $temp_name_ext ); // write currently uploaded filename to flagfile
 				if( strpos( $temp_file, 'delete-me-not-118346814134' ) == FALSE ) unlink( $temp_file );
 				$c = $i;
+				if( $test == TRUE ) { // end function if this is a first 'test' run
+					if( isset($error) ) { return FALSE; } else { return TRUE; }
+				}
 			}
 		}
 	}
-	if( ($c+1) >= $files_num ) { cleanTmp(); } 
+	if( ($c+1) >= $files_count ) { cleanTmp(); } 
 }
 
 function full_copy( $source, $target ) {

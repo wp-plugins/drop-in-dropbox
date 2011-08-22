@@ -4,7 +4,7 @@ Donate link: http://www.denisbuka.ru
 Tags: dropbox, upload, backup, files, directories, subdirectories, files
 Requires at least: 3.2
 Tested up to: 3.2
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 
 Upload single files or entire directories with subdirectories to your Dropbox account.   
 
@@ -59,3 +59,6 @@ Actually, yes:
 
 = 0.2.2 =
 * More bug fixes   
+
+= 0.2.3 =
+* Improved error handling   

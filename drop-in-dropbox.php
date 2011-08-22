@@ -3,7 +3,7 @@
 Plugin Name: Drop in Dropbox
 Plugin URI: http://www.denisbuka.ru/drop-in-dropbox/
 Description: Upload single files or entire directories with subdirectories to your Dropbox account.
-Version: 0.2.2 
+Version: 0.2.3
 Author: Denis Buka
 Author URI: http://www.denisbuka.ru
 
@@ -135,17 +135,15 @@ function drop_drop_render_form() {
 			<?php 
 			if( ( isset( $_POST['drop_drop_now'] ) || file_exists( $runflag ) ) && !isset( $_POST['drop_drop_abort'] ) ) { 
 				if( file_exists( $runflag ) ) {
-					echo 	'<p>
-								<p style="color: green"><strong>Upload started successfully!</strong></p>
-								<p><strong style="color: green">Currently uploading: </strong></span>
-								<code>' . file_get_contents( $runflag ) . '</code></p>
-							</p>
-							<p><input type="submit" name="drop_drop_abort" value="Abort" />&nbsp;&nbsp;&nbsp;<input type="submit" name="refresh" value="Refresh" /></p>';
+					echo 	'	<p style="color: green"><strong>Running...</strong></p>
+								<p><strong style="color: green">Currently uploading: </strong></span><code>' . file_get_contents( $runflag ) . '</code></p>
+								<p><input type="submit" name="drop_drop_abort" value="Abort" />&nbsp;&nbsp;&nbsp;<input type="submit" name="refresh" value="Refresh" /></p>
+							';
 				} else {
+					echo 	'	<p style="color: green"><strong>Starting upload...</strong></p>';
 					try { initDrop(); } catch(Exception $e) { echo '<p style="color:red"><strong>Error message: ' . $e->getMessage() . '</strong></p>'; }
-					echo 	'<p style="color: green"><strong>Uploading started successfully!</strong>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<input type="submit" name="drop_drop_abort" value="Abort" />&nbsp;&nbsp;&nbsp;<input type="submit" name="refresh" value="Refresh" /></p></p>';
+					echo 	'	<p><input type="submit" name="drop_drop_abort" value="Abort" />&nbsp;&nbsp;&nbsp;<input type="submit" name="refresh" value="Refresh" /></p>
+					';
 				}
 			} else {
 				if( isset( $_POST['drop_drop_abort'] ) ) {
