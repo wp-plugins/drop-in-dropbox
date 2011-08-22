@@ -34,9 +34,10 @@ Links: [Author's Site](http://www.denisbuka.ru)
 == Frequently Asked Questions ==
 
 = Any new features planned? =
+
 Actually, yes:   
 1) schedule uploads to be run periodically at a specific time;   
-2) ability to exclude certain files and directories from uploading.
+2) ability to exclude certain files and directories from being uploaded.
 
 == Upgrade Notice ==
 
