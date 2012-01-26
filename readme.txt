@@ -23,7 +23,7 @@ This plugin allows you to upload single files or entire directories with subdire
 * Intuitive Navigation (http://wordpress.org/extend/plugins/intuitive-navigation/)   
 * Generate Cache (http://wordpress.org/extend/plugins/generate-cache/)   
 
-Links: [Author's Site](http://steamingkettle.net)
+Links: [Steaming Kettle Website Design & Video Production Studio](http://steamingkettle.net)
 
 == Installation ==
 
