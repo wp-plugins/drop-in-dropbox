@@ -1,10 +1,10 @@
 === Drop in Dropbox ===
 Contributors: Denis Buka
-Donate link: http://www.denisbuka.ru
+Donate link: http://steamingkettle.net
 Tags: dropbox, upload, backup, files, directories, subdirectories, files
 Requires at least: 3.2
 Tested up to: 3.2
-Stable tag: 0.2.3
+Stable tag: 0.2.4
 
 Upload single files or entire directories with subdirectories to your Dropbox account.   
 
@@ -23,7 +23,7 @@ This plugin allows you to upload single files or entire directories with subdire
 * Intuitive Navigation (http://wordpress.org/extend/plugins/intuitive-navigation/)   
 * Generate Cache (http://wordpress.org/extend/plugins/generate-cache/)   
 
-Links: [Author's Site](http://www.denisbuka.ru)
+Links: [Author's Site](http://steamingkettle.net)
 
 == Installation ==
 
@@ -63,3 +63,6 @@ Actually, yes:
 
 = 0.2.3 =
 * Improved error handling   
+
+= 0.2.4 =
+* Minor stuff   
