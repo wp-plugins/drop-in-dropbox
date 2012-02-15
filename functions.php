@@ -46,7 +46,7 @@ function cleanTmp() {
 	}
 }
 function dropNow( $count, $run, $test=FALSE ) {
-	set_time_limit(0);
+	try { set_time_limit(0); } catch(Exception $e) { echo ''; };
 	ini_set("max_execution_time", "3000000000");
 	ini_set('memory_limit','128M');
 	ini_set('output_buffering', 0);
