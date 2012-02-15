@@ -47,26 +47,26 @@ Actually, yes:
 
 == Changelog ==
 
-= 0.1 beta =
-* Initial beta release   
+= 0.2.5 =
+* Error handling   
+* Improved compatibility   
+
+= 0.2.4 =
+* Minor stuff   
+
+= 0.2.3 =
+* Improved error handling   
+
+= 0.2.2 =
+* More bug fixes   
+
+= 0.2.1 =
+* Bugs fixed   
 
 = 0.2 =
 * Ability to upload files   
 * Improvements for long uploads   
 * Added "Abort" button   
 
-= 0.2.1 =
-* Bugs fixed   
-
-= 0.2.2 =
-* More bug fixes   
-
-= 0.2.3 =
-* Improved error handling   
-
-= 0.2.4 =
-* Minor stuff   
-
-= 0.2.5 =
-* Error handling   
-* Improved compatibility   
+= 0.1 beta =
+* Initial beta release   
