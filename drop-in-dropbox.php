@@ -3,11 +3,11 @@
 Plugin Name: Drop in Dropbox
 Plugin URI: http://steamingkettle.net/web-design/wordpress-plugins/
 Description: Upload single files or entire directories with subdirectories to your Dropbox account.
-Version: 0.2.5
+Version: 0.2.6
 Author: Denis Buka
 Author URI: http://steamingkettle.net
 
-Copyright (C) 2011 www.denisbuka.ru
+Copyright (C) 2011 steamingkettle.net
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
