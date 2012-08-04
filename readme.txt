@@ -10,7 +10,7 @@ Upload single files or entire directories with subdirectories to your Dropbox ac
 
 == Description ==
 
-This plugin allows you to upload single files or entire directories with subdirectories to your Dropbox account. You can use it for backup, synchronization or whatever uploading tasks you might have.
+This plugin allows you to upload single files or entire directories with subdirectories to your Dropbox account. You can use it for backup, synchronization or whatever uploading tasks you may have.
 
 **Features overview:**   
 
