@@ -60,6 +60,8 @@ function drop_drop_render_form() {
 		
 		<div class="icon32" id="icon-options-general"><br></div>
 		<h2>Drop in Dropbox Settings</h2>
+		
+		<h3><a target="_blank" href="http://db.tt/Og2TFSR4">Sign up for Dropbox &raquo;</a></h3>
 
 		<form method="post" action="options.php">
 			<?php settings_fields('drop_drop_plugin_options'); ?>
