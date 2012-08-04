@@ -3,7 +3,7 @@
 Plugin Name: Drop in Dropbox
 Plugin URI: http://steamingkettle.net/web-design/wordpress-plugins/
 Description: Upload single files or entire directories with subdirectories to your Dropbox account.
-Version: 0.2.6
+Version: 0.2.7
 Author: Denis Buka
 Author URI: http://steamingkettle.net
 
